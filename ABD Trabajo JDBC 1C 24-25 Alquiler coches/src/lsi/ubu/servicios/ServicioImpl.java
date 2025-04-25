@@ -69,6 +69,17 @@ public class ServicioImpl implements Servicio {
 			 * fecha ini.
 			 */
 
+			// 1. Comprobamos que el vehículo existe.
+            st = con.prepareStatement("SELECT COUNT(*) FROM VEHICULOS WHERE MATRICULA = ?");
+            st.setString(1, matricula);
+            rs = st.executeQuery();
+            rs.next();
+            if (rs.getInt(1) == 0) {
+                throw new AlquilerCochesException(AlquilerCochesException.VEHICULO_NO_EXIST);
+            }
+            rs.close();
+            st.close();
+
 		} catch (SQLException e) {
 			// Completar por el alumno
 
