@@ -24,25 +24,31 @@ public class ServicioImpl implements Servicio {
 		Connection con = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
+		boolean nula = false;
 
-		/*
-		 * El calculo de los dias se da hecho
-		 */
-		long diasDiff = DIAS_DE_ALQUILER;
-		if (fechaFin != null) {
-			diasDiff = TimeUnit.MILLISECONDS.toDays(fechaFin.getTime() - fechaIni.getTime());
-
-			if (diasDiff < 1) {
-				throw new AlquilerCochesException(AlquilerCochesException.SIN_DIAS);
-			}
-		}
+		// Si se pasa la fechaFin, se calcula la diferencia en días.
+        // Si no se pasa, se calcula fechaFin sumándole (DIAS_DE_ALQUILER - 2) días a fechaIni.
+        long diasDiff;
+        if (fechaFin != null) {
+        	nula = false;
+            diasDiff = TimeUnit.MILLISECONDS.toDays(fechaFin.getTime() - fechaIni.getTime());
+            if (diasDiff < 1) {
+                throw new AlquilerCochesException(AlquilerCochesException.SIN_DIAS);
+            }
+        } else {
+            // Se deja diasDiff en DIAS_DE_ALQUILER para la facturación
+        	nula = true;
+            diasDiff = DIAS_DE_ALQUILER;
+            // Se calcula la fecha fin a partir de fechaIni
+            fechaFin = new java.sql.Date(fechaIni.getTime() + ((long)(DIAS_DE_ALQUILER - 2)) * 24L * 3600L * 1000L);
+        }
 
 		try {
 			con = pool.getConnection();
 
 			/* A completar por el alumnado... */
 
-			/* ================================= AYUDA R�PIDA ===========================*/
+			/* ================================= AYUDA R�PIDA ===========================*/
 			/*
 			 * Algunas de las columnas utilizan tipo numeric en SQL, lo que se traduce en
 			 * BigDecimal para Java.
