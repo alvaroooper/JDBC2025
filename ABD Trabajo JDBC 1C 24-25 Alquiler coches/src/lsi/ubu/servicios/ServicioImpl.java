@@ -80,6 +80,22 @@ public class ServicioImpl implements Servicio {
             rs.close();
             st.close();
 
+			// 2. Comprobamos que el cliente existe.
+            String sqlCheckCliente = "SELECT 1 FROM CLIENTES WHERE NIF = ?";
+            st = con.prepareStatement(sqlCheckCliente);
+            st.setString(1, nifCliente);
+            rs = st.executeQuery();
+            if (!rs.next()) {
+                throw new AlquilerCochesException(AlquilerCochesException.CLIENTE_NO_EXIST);
+            }
+            rs.close();
+            st.close();
+
+            // 3. Verificamos nuevamente que la cantidad de días sea válida.
+            if (diasDiff < 1) {
+                throw new AlquilerCochesException(AlquilerCochesException.SIN_DIAS);
+            }
+
 		} catch (SQLException e) {
 			// Completar por el alumno
 
