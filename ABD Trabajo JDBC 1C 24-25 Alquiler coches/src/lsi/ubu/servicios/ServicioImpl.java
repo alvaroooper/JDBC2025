@@ -130,6 +130,32 @@ public class ServicioImpl implements Servicio {
 
             st.executeUpdate();
             st.close();
+
+			// 6. Obtenemos los datos del vehículo para calcular la factura
+            // (Se unen VEHICULOS, MODELOS y PRECIO_COMBUSTIBLE).
+            String sqlDatosModelo = 
+                    "SELECT M.id_modelo, M.precio_cada_dia, M.capacidad_deposito, " +
+                    "       PC.precio_por_litro, PC.tipo_combustible " +
+                    "FROM VEHICULOS V " +
+                    "JOIN MODELOS M ON V.id_modelo = M.id_modelo " +
+                    "JOIN PRECIO_COMBUSTIBLE PC ON M.tipo_combustible = PC.tipo_combustible " +
+                    "WHERE V.matricula = ?";
+
+            st = con.prepareStatement(sqlDatosModelo);
+            st.setString(1, matricula);
+            rs = st.executeQuery();
+            if (!rs.next()) {
+                // En teoría, ya se controló que el vehículo exista.
+                throw new AlquilerCochesException(AlquilerCochesException.VEHICULO_NO_EXIST);
+            }
+            int idModelo = rs.getInt("id_modelo");
+            java.math.BigDecimal precioCadaDia = rs.getBigDecimal("precio_cada_dia");
+            java.math.BigDecimal capacidadDeposito = rs.getBigDecimal("capacidad_deposito");
+            java.math.BigDecimal precioPorLitro = rs.getBigDecimal("precio_por_litro");
+            String tipoCombustible = rs.getString("tipo_combustible");
+            rs.close();
+            st.close();
+
 		} catch (SQLException e) {
 			// Completar por el alumno
 
