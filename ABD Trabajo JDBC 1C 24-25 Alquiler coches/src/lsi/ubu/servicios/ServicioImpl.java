@@ -156,6 +156,29 @@ public class ServicioImpl implements Servicio {
             rs.close();
             st.close();
 
+            // 7. Calculamos los importes usando BigDecimal.
+            java.math.BigDecimal diasBD = new java.math.BigDecimal(diasDiff);
+            java.math.BigDecimal importeDias = diasBD.multiply(precioCadaDia);
+            java.math.BigDecimal importeDeposito = capacidadDeposito.multiply(precioPorLitro);
+            java.math.BigDecimal totalFactura = importeDias.add(importeDeposito);
+
+            // 8. Insertamos la factura usando la secuencia "seq_num_fact".
+            st = con.prepareStatement("SELECT seq_num_fact.NEXTVAL FROM DUAL");
+            rs = st.executeQuery();
+            rs.next();
+            long nroFactura = rs.getLong(1);
+            rs.close();
+            st.close();
+
+            st = con.prepareStatement(
+                "INSERT INTO FACTURAS (nroFactura, importe, cliente) VALUES (?, ?, ?)"
+            );
+            st.setLong(1, nroFactura);
+            st.setBigDecimal(2, totalFactura);
+            st.setString(3, nifCliente);
+            st.executeUpdate();
+            st.close();
+
 		} catch (SQLException e) {
 			// Completar por el alumno
 
