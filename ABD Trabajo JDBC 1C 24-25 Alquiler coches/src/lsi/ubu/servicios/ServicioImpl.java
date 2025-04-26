@@ -179,6 +179,33 @@ public class ServicioImpl implements Servicio {
             st.executeUpdate();
             st.close();
 
+			// 9. Insertamos las líneas de factura.
+
+            // Línea 1: "X dias de alquiler, vehiculo modelo <idModelo>"
+            String concepto1 = diasDiff + " dias de alquiler, vehiculo modelo " + idModelo;
+            st = con.prepareStatement(
+                "INSERT INTO LINEAS_FACTURA (nroFactura, concepto, importe) VALUES (?, ?, ?)"
+            );
+            st.setLong(1, nroFactura);
+            st.setString(2, concepto1);
+            st.setBigDecimal(3, importeDias);
+            st.executeUpdate();
+            st.close();
+
+            // Línea 2: "Deposito lleno de <capacidad> litros de <tipoCombustible>"
+            String concepto2 = "Deposito lleno de " + capacidadDeposito.intValue() + " litros de " + tipoCombustible;
+            st = con.prepareStatement(
+                "INSERT INTO LINEAS_FACTURA (nroFactura, concepto, importe) VALUES (?, ?, ?)"
+            );
+            st.setLong(1, nroFactura);
+            st.setString(2, concepto2);
+            st.setBigDecimal(3, importeDeposito);
+            st.executeUpdate();
+            st.close();
+
+            // 10. Confirmamos la transacción.
+            con.commit();
+
 		} catch (SQLException e) {
 			// Completar por el alumno
 
