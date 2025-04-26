@@ -114,7 +114,22 @@ public class ServicioImpl implements Servicio {
             }
             rs.close();
             st.close();
+			// 5. Inserción en RESERVAS usando la secuencia "seq_reservas" para idReserva.
+            st = con.prepareStatement(
+                "INSERT INTO RESERVAS (idReserva, CLIENTE, MATRICULA, FECHA_INI, FECHA_FIN) " +
+                "VALUES (seq_reservas.NEXTVAL, ?, ?, ?, ?)"
+            );
+            st.setString(1, nifCliente);
+            st.setString(2, matricula);
+            st.setDate(3, new java.sql.Date(fechaIni.getTime()));
+            if (nula == true) {
+                st.setDate(4, null);
+            } else {
+                st.setDate(4, new java.sql.Date(fechaFin.getTime()));
+            }
 
+            st.executeUpdate();
+            st.close();
 		} catch (SQLException e) {
 			// Completar por el alumno
 
