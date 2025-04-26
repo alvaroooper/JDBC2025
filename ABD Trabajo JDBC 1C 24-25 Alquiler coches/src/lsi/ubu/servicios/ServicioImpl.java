@@ -96,6 +96,25 @@ public class ServicioImpl implements Servicio {
                 throw new AlquilerCochesException(AlquilerCochesException.SIN_DIAS);
             }
 
+			// 4. Comprobamos disponibilidad del vehículo (no hay solape con otra reserva).
+            // La condición de solape es: (nueva_fechaIni <= FECHA_FIN_existente) AND (nueva_fechaFin >= FECHA_INI_existente)
+            st = con.prepareStatement(
+                "SELECT COUNT(*) FROM RESERVAS " +
+                "WHERE MATRICULA = ? " +
+                "  AND ? <= FECHA_FIN " +
+                "  AND ? >= FECHA_INI"
+            );
+            st.setString(1, matricula);
+            st.setDate(2, new java.sql.Date(fechaIni.getTime()));
+            st.setDate(3, new java.sql.Date(fechaFin.getTime()));
+            rs = st.executeQuery();
+            rs.next();
+            if (rs.getInt(1) > 0) {
+                throw new AlquilerCochesException(AlquilerCochesException.VEHICULO_OCUPADO);
+            }
+            rs.close();
+            st.close();
+
 		} catch (SQLException e) {
 			// Completar por el alumno
 
