@@ -218,8 +218,18 @@ public class ServicioImpl implements Servicio {
             LOGGER.debug(e.getMessage());
             throw e;
              }
-		finally {
-			/* A rellenar por el alumnado*/
-		}
-	}
+        finally {
+                if (rs != null) {
+                    try { rs.close(); } catch (SQLException ex) { LOGGER.debug(ex.getMessage()); }
+                }
+                if (st != null) {
+                    try { st.close(); } catch (SQLException ex) { LOGGER.debug(ex.getMessage()); }
+                }
+                if (con != null) {
+                    try { 
+                        con.setAutoCommit(true);
+                        con.close(); 
+                    } catch (SQLException ex) { LOGGER.debug(ex.getMessage()); }
+                }
+	    }   
 }
