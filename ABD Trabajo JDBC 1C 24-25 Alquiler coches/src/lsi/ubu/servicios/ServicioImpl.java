@@ -206,14 +206,19 @@ public class ServicioImpl implements Servicio {
             // 10. Confirmamos la transacción.
             con.commit();
 
-		} catch (SQLException e) {
-			// Completar por el alumno
-
-			LOGGER.debug(e.getMessage());
-
-			throw e;
-
-		} finally {
+		catch (AlquilerCochesException ex) {
+            if (con != null) {
+                con.rollback();
+            }
+            throw ex;
+        } catch (SQLException e) {
+            if (con != null) {
+                con.rollback();
+            }
+            LOGGER.debug(e.getMessage());
+            throw e;
+             }
+		finally {
 			/* A rellenar por el alumnado*/
 		}
 	}
