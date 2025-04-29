@@ -206,7 +206,7 @@ public class ServicioImpl implements Servicio {
             // 10. Confirmamos la transacción.
             con.commit();
 
-		catch (AlquilerCochesException ex) {
+		}catch (AlquilerCochesException ex) {
             if (con != null) {
                 con.rollback();
             }
@@ -232,4 +232,5 @@ public class ServicioImpl implements Servicio {
                     } catch (SQLException ex) { LOGGER.debug(ex.getMessage()); }
                 }
 	    }   
+    }
 }
